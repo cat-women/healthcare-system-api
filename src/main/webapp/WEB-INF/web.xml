@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="WebApp_ID" version="2.5">
+    <!-- The rest of your web.xml content -->
+    <servlet>
+        <servlet-name>test</servlet-name>
+        <servlet-class>com.api.test</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>test</servlet-name>
+        <url-pattern>/test</url-pattern>
+    </servlet-mapping>
+    
+    <!-- User controller -->
+    <servlet>
+        <servlet-name>user</servlet-name>
+        <servlet-class>Users.UserController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>user</servlet-name>
+        <url-pattern>/user/*</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Doctor controller -->
+    <servlet>
+        <servlet-name>doctor</servlet-name>
+        <servlet-class>Doctor.DoctorController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>doctor</servlet-name>
+        <url-pattern>/doctor/*</url-pattern>
+    </servlet-mapping>
+    
+    
+     <!-- lab controller -->
+    <servlet>
+        <servlet-name>lab</servlet-name>
+        <servlet-class>Labs.LabController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>lab</servlet-name>
+        <url-pattern>/lab/*</url-pattern>
+    </servlet-mapping>
+    
+     
+     <!-- report controller -->
+    <servlet>
+        <servlet-name>report</servlet-name>
+        <servlet-class>Reports.ReportController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>report</servlet-name>
+        <url-pattern>/report/*</url-pattern>
+    </servlet-mapping>
+    
+</web-app>
+    
