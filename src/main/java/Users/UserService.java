@@ -35,7 +35,7 @@ public class UserService {
             preparedStatement.setString(2, user.getUsername());
             preparedStatement.setString(3, user.getEmail());
             preparedStatement.setString(4, user.getPassword());
-            preparedStatement.setString(5, user.getToken());
+            preparedStatement.setInt(5, user.getToken());
             preparedStatement.setDate(6, user.getDate());
 
             return preparedStatement.executeUpdate();
@@ -65,7 +65,7 @@ public class UserService {
                 user.setName(result.getString("name"));
                 user.setUsername(result.getString("username"));
                 user.setEmail(result.getString("email"));
-                user.setToken(result.getString("token"));
+                user.setToken(result.getInt("token"));
                 user.setDate(result.getDate("date"));
                 user.setPassword(result.getString("password"));
                 return user;
@@ -84,12 +84,12 @@ public class UserService {
         return user;
     }
 
-    public ArrayList<UserModal> getAll() {
+    public ArrayList<UserModal> getAll(int start, int end) {
 
         ArrayList<UserModal> list = new ArrayList<UserModal>();
         try {
             con = db.database();
-            sql = "Select * from " + tableName;
+            sql = "Select * from " + tableName + " limit " + start + "," + end;
             System.out.println(sql);
             preparedStatement = con.prepareStatement(sql);
             result = preparedStatement.executeQuery();
@@ -99,9 +99,10 @@ public class UserService {
                 user.setName(result.getString("name"));
                 user.setUsername(result.getString("username"));
                 user.setEmail(result.getString("email"));
-                user.setToken(result.getString("token"));
+                user.setToken(result.getInt("token"));
                 user.setDate(result.getDate("date"));
                 user.setPassword(result.getString("password"));
+                user.setUserType(result.getString("userType"));
                 list.add(user);
             }
 
@@ -149,7 +150,6 @@ public class UserService {
         try {
             sql = " update " + tableName;
             count = sql.length();
-            System.out.println("");
 
             con = db.database();
             boolean isUsernameAndUser = (user.name != null || user.username != null);
@@ -173,11 +173,11 @@ public class UserService {
                         : sql.concat(" set password =  " + "'" + user.password + "'");
             }
 
-            if (user.token != null) {
-                sql = (user.token != null && (user.password != null || user.email != null || user.username != null || user.name != null))
-                        ? sql.concat(", token =  " + "'" + user.token + "'")
-                        : sql.concat(" set token =  " + "'" + user.token + "'");
-            }
+//            if (user.token != null) {
+//                sql = (user.token != null && (user.password != null || user.email != null || user.username != null || user.name != null))
+//                        ? sql.concat(", token =  " + "'" + user.token + "'")
+//                        : sql.concat(" set token =  " + "'" + user.token + "'");
+//            }
             if (user.date != null) {
                 sql = (user.date != null && (user.password != null || user.email != null || user.username != null || user.name != null))
                         ? sql.concat(", token =  " + "'" + user.date + "'")
@@ -201,10 +201,9 @@ public class UserService {
 
     public int deleteRecord(long id) {
         try {
-            sql = "DELETE from " + tableName + " where id = ? ";
+            sql = "DELETE from " + tableName + " where id =  "+id;
             con = db.database();
             preparedStatement = con.prepareStatement(sql);
-            preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
@@ -217,4 +216,96 @@ public class UserService {
         }
         return 0;
     }
+
+    public UserModal authenticate(String data) throws SQLException {
+        UserModal user = new UserModal();
+        try {
+            con = db.database();
+
+            sql = "SELECT EXISTS ( SELECT 1 FROM  " + tableName + "  WHERE  email = '" + data + " ')";
+            preparedStatement = con.prepareStatement(sql);
+            result = preparedStatement.executeQuery();
+            if (result != null) {
+
+                sql = "Select * from " + tableName + "  WHERE  email = '" + data + " '";
+                //System.out.println(sql);
+                preparedStatement = con.prepareStatement(sql);
+                result = preparedStatement.executeQuery();
+                while (result.next()) {
+
+                    user.setId(result.getInt("id"));
+                    user.setName(result.getString("name"));
+                    user.setUsername(result.getString("username"));
+                    user.setEmail(result.getString("email"));
+                    user.setToken(result.getInt("token"));
+                    user.setDate(result.getDate("date"));
+                    user.setPassword(result.getString("password"));
+                    user.setUserType(result.getString("userType"));
+
+                    return user;
+                }
+            }
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                System.out.println("connection !" + ex.getMessage());
+            }
+        }
+        return user;
+    }
+
+    public UserModal getByuserName(int id, String name) {
+        UserModal user = new UserModal();
+        try {
+            con = db.database();
+            sql = "Select id,name,username,email from " + tableName + " where id =" + id + " or username = '" + name + "'";
+            System.out.println(sql);
+            preparedStatement = con.prepareStatement(sql);
+            result = preparedStatement.executeQuery();
+            while (result.next()) {
+
+                user.setId(result.getInt("id"));
+                user.setName(result.getString("name"));
+                user.setUsername(result.getString("username"));
+                user.setEmail(result.getString("email"));
+                return user;
+            }
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                System.out.println("connection !" + ex.getMessage());
+            }
+        }
+        return user;
+    }
+
+    public int getRow() {
+        try {
+            con = db.database();
+            sql = "SELECT COUNT(id) as row from " + tableName;
+            preparedStatement = con.prepareStatement(sql);
+            result = preparedStatement.executeQuery();
+            while (result.next()) {
+                UserModal user = new UserModal();
+                user.setId(result.getInt("row"));
+                return user.getId();
+
+            }
+
+        } catch (SQLException e) {
+            //
+        }
+        return 0;
+    }
+
 }

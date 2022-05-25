@@ -9,7 +9,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,6 +32,14 @@ public class UserController extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+//        response.addHeader("Access-Control-Allow-Origin", " http://localhost:3000");
+//        
+//      response.addHeader("strict-origin-when-cross-origin", "http://localhost:3000");
+//      
+//        response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
+//        response.addHeader("Access-Control-Allow-Headers", "X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
+//        response.addHeader("Access-Control-Max-Age", "1728000");
         UserModal User = new UserModal();
 
         StringBuilder buffer = new StringBuilder();
@@ -54,12 +64,21 @@ public class UserController extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ArrayList<UserModal> userlist = new ArrayList<UserModal>();
-//        
-//        user = new UserModal();
-//        user = service.getById(3);
 
-        userlist = service.getAll();
+        String queryString = request.getQueryString();
+        //System.out.println("query is " + queryString);
+
+        String result = java.net.URLDecoder.decode(queryString, StandardCharsets.UTF_8.name());
+
+        char f = result.charAt(9);
+        int start = Character.getNumericValue(f);
+
+        char t = result.charAt(result.length() - 1);
+        int end = Character.getNumericValue(t);
+
+
+        ArrayList<UserModal> userlist = new ArrayList<UserModal>();
+        userlist = service.getAll(start, end);
         if (userlist != null) {
             String json = GSON.toJson(userlist);
 
@@ -101,23 +120,21 @@ public class UserController extends HttpServlet {
         }
     }
 
-    public void doDelete(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String uri = request.getRequestURI();
-        //System.out.println("uri"+uri);
-        int id = Integer.parseInt(uri.substring("/Api/user/".length()));
-        //System.out.println("url id "+id);
-
-        if (service.containsKey(id)) {
-            if (service.deleteRecord(id) != 0) {
-                response.getOutputStream().print("Data deleted successfully  ");
-            } else {
-                response.getOutputStream().print("Error while deleting this data ");
-            }
-
-        } else {
-            response.getOutputStream().print("no data found ");
-        }
-
-    }
+//    public void doDelete(HttpServletRequest request, HttpServletResponse response)
+//            throws ServletException, IOException {
+//
+//        int id = Integer.parseInt(request.getParameter("id"));
+//
+//        // System.out.println("the id in user delete is " + Integer.parseInt(id));
+//        if (service.containsKey(id)) {
+//            if (service.deleteRecord(id) > 0) {
+//                response.getOutputStream().print("Data deleted successfully  ");
+//            } else {
+//                response.getOutputStream().print("Error while deleting this data ");
+//            }
+//
+//        } else {
+//            response.getOutputStream().print("no data found ");
+//        }
+//    }
 }

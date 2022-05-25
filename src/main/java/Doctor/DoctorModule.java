@@ -11,9 +11,36 @@ package Doctor;
  */
 public class DoctorModule {
 
-    private int id, nmc_no, charge;
-    private String name, citizenship, address, specialization, qualification, email, contact;
+    private int id, nmc_no, charge,token;
+    private String name, citizenship, address, specialization, qualification, email, contact,image,from,to,time ;
     private Boolean isAvailable;
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    
+    
+    
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public String getTo() {
+        return to;
+    }
 
     public int getId() {
         return id;
@@ -22,6 +49,11 @@ public class DoctorModule {
     public int getNmc_no() {
         return nmc_no;
     }
+
+    public int getToken() {
+        return token;
+    }
+    
 
     public int getCharge() {
         return charge;
@@ -58,6 +90,11 @@ public class DoctorModule {
     public String getContact() {
         return contact;
     }
+
+    public String getImage() {
+        return image;
+    }
+    
 
     public void setEmail(String email) {
         this.email = email;
@@ -99,8 +136,17 @@ public class DoctorModule {
         this.qualification = qualification;
     }
 
+    public void setToken(int token) {
+        this.token = token;
+    }
+
     public void setIsAvailable(Boolean isAvailable) {
         this.isAvailable = isAvailable;
     }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+    
 
 }

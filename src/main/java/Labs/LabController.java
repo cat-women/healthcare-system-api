@@ -41,13 +41,14 @@ public class LabController extends HttpServlet {
         }
 
         String payload = buffer.toString();
-
+        System.out.println("paylaod of lab inset " + payload);
         lab = GSON.fromJson(payload, LabModal.class);
         int result = service.insertRecord(lab);
         if (result > 0) {
-            response.getOutputStream().print("data added successfully ");
+            response.setStatus(response.SC_OK);
         } else {
-            response.getOutputStream().print("failed to add ");
+            response.setStatus(response.SC_SERVICE_UNAVAILABLE);
+            //503
 
         }
     }
@@ -67,54 +68,25 @@ public class LabController extends HttpServlet {
         }
     }
 
-    public void doPut(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String uri = request.getRequestURI();
-        int id = Integer.parseInt(uri.substring("/Api/lab/".length()));
-        System.out.println("user id " + id);
-        if (service.containsKey(id)) {
-
-            StringBuilder buffer = new StringBuilder();
-            BufferedReader reader = request.getReader();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line);
-            }
-
-            String payload = buffer.toString();
-            System.out.println("payload " + payload);
-
-            lab = GSON.fromJson(payload, LabModal.class);
-
-            if (service.updateRecord(lab, id) > 0) {
-                response.getOutputStream().print(" user data updated  ");
-            } else {
-                response.getOutputStream().print("Error while updating  ");
-
-            }
-        } else {
-            response.getOutputStream().print("user doesn't exit ");
-        }
-    }
-
     public void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String uri = request.getRequestURI();
-        //System.out.println("uri"+uri);
-        int id = Integer.parseInt(uri.substring("/Api/lab/".length()));
-        //System.out.println("url id "+id);
 
+        int id = Integer.parseInt(request.getParameter("id"));
+
+        // System.out.println("the id in user delete is " + Integer.parseInt(id));
         if (service.containsKey(id)) {
-            if (service.deleteRecord(id) != 0) {
+            if (service.deleteRecord(id) > 0) {
+            response.setStatus(response.SC_OK);
                 response.getOutputStream().print("Data deleted successfully  ");
             } else {
+                            response.setStatus(response.SC_NOT_MODIFIED);
+
                 response.getOutputStream().print("Error while deleting this data ");
             }
 
         } else {
             response.getOutputStream().print("no data found ");
         }
-
     }
 
 }

@@ -10,8 +10,32 @@ package Labs;
  * @author Dell
  */
 public class LabModal {
-    private int id,doctor_id,patience_id;
-    private String test_name,result;
+    private int id,doctor_id,patience_id,app_id;
+    private String test_name,result,name,doctorName;
+
+    public void setDoctorName(String doctorName) {
+        this.doctorName = doctorName;
+    }
+
+    public String getDoctorName() {
+        return doctorName;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setApp_id(int app_id) {
+        this.app_id = app_id;
+    }
+
+    public int getApp_id() {
+        return app_id;
+    }
 
     public int getId() {
         return id;

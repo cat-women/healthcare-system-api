@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -31,7 +32,7 @@ public class DoctorController extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        doctor = new DoctorModule();
+        //doctor = new DoctorModule();
 
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
@@ -41,23 +42,39 @@ public class DoctorController extends HttpServlet {
         }
 
         String payload = buffer.toString();
-
+        System.out.println("payload" + payload);
         doctor = GSON.fromJson(payload, DoctorModule.class);
+
         int result = service.insertRecord(doctor);
-        if (result > -1) {
+        if (result == -1) {
             response.getOutputStream().print("Doctor with this NMC no already exit ");
         } else if (result > 0) {
             response.getOutputStream().print("data added successfully ");
+            response.setStatus(HttpServletResponse.SC_OK);
+
         } else {
             response.getOutputStream().print("failed to add ");
+            response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
 
         }
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String queryString = request.getQueryString();
+        //System.out.println("query is " + queryString);
+
+        String result = java.net.URLDecoder.decode(queryString, StandardCharsets.UTF_8.name());
+        char f = result.charAt(9);
+        int start = Character.getNumericValue(f);
+
+        char t = result.charAt(result.length() - 1);
+        int end = Character.getNumericValue(t);
+        
+        start  = 0;
+        end =10;
         List<DoctorModule> doctors = new ArrayList<DoctorModule>();
-        doctors = service.getAll();
+        doctors = service.getAll(start,end);
         if (doctors != null) {
             String json = GSON.toJson(doctors);
 
@@ -68,15 +85,14 @@ public class DoctorController extends HttpServlet {
             response.getOutputStream().print("no data found ");
         }
     }
-    
-    
+
     public void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String uri = request.getRequestURI();
         int id = Integer.parseInt(uri.substring("/Api/doctor/".length()));
-        System.out.println("doctor id "+id);
+        System.out.println("doctor id " + id);
         if (service.containsKey(id)) {
-            
+
             StringBuilder buffer = new StringBuilder();
             BufferedReader reader = request.getReader();
             String line;
@@ -87,7 +103,7 @@ public class DoctorController extends HttpServlet {
             String payload = buffer.toString();
             System.out.println("payload " + payload);
 
-            doctor  = GSON.fromJson(payload, DoctorModule.class);
+            doctor = GSON.fromJson(payload, DoctorModule.class);
 
             if (service.updateRecord(doctor, id) > 0) {
                 response.getOutputStream().print(" doctor data updated  ");

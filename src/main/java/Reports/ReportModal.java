@@ -5,7 +5,8 @@
  */
 package Reports;
 
-import java.sql.Date;
+import java.util.Date;
+
 
 /**
  *
@@ -13,11 +14,15 @@ import java.sql.Date;
  */
 public class ReportModal extends Labs.LabModal{
     
-    private String medicine;
+    private String medicine,symptoms;
     private Date nextDate;
 
     public String getMedicine() {
         return medicine;
+    }
+
+    public String getSymptoms() {
+        return symptoms;
     }
 
     public Date getNextDate() {
@@ -28,9 +33,15 @@ public class ReportModal extends Labs.LabModal{
         this.medicine = medicine;
     }
 
+    public void setSymptoms(String symptoms) {
+        this.symptoms = symptoms;
+    }
+
+
     public void setNextDate(Date nextDate) {
         this.nextDate = nextDate;
     }
+    
     
     
     

@@ -10,8 +10,11 @@ import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "ReportController", urlPatterns = {"/ReportController"})
 public class ReportController extends HttpServlet {
-    
 
     private static final Gson GSON = new GsonBuilder().create();
 
@@ -57,7 +59,11 @@ public class ReportController extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<ReportModal> reports = new ArrayList<ReportModal>();
-        reports = service.getAll();
+        try {
+            reports = service.getAll();
+        } catch (ParseException ex) {
+            Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if (reports != null) {
             String json = GSON.toJson(reports);
 
@@ -69,55 +75,24 @@ public class ReportController extends HttpServlet {
         }
     }
 
-
-    public void doPut(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String uri = request.getRequestURI();
-        int id = Integer.parseInt(uri.substring("/Api/report/".length()));
-        System.out.println("user id "+id);
-        if (service.containsKey(id)) {
-            
-            StringBuilder buffer = new StringBuilder();
-            BufferedReader reader = request.getReader();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line);
-            }
-
-            String payload = buffer.toString();
-            System.out.println("payload " + payload);
-
-            report = GSON.fromJson(payload, ReportModal.class);
-
-            if (service.updateRecord(report, id) > 0) {
-                response.getOutputStream().print("  data updated  ");
-            } else {
-                response.getOutputStream().print("Error while updating  ");
-
-            }
-        } else {
-            response.getOutputStream().print("data doesn't exit ");
-        }
-    }
-
     public void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String uri = request.getRequestURI();
-        //System.out.println("uri"+uri);
-        int id = Integer.parseInt(uri.substring("/Api/report/".length()));
-        //System.out.println("url id "+id);
 
+        int id = Integer.parseInt(request.getParameter("id"));
+
+        // System.out.println("the id in user delete is " + Integer.parseInt(id));
         if (service.containsKey(id)) {
-            if (service.deleteRecord(id) != 0) {
+            if (service.deleteRecord(id) > 0) {
+                response.setStatus(response.SC_OK);
                 response.getOutputStream().print("Data deleted successfully  ");
             } else {
+                response.setStatus(response.SC_NOT_MODIFIED);
+
                 response.getOutputStream().print("Error while deleting this data ");
             }
 
         } else {
             response.getOutputStream().print("no data found ");
         }
-
     }
-
 }

@@ -12,8 +12,8 @@ import java.sql.Date;
  * @author Dell
  */
 public class UserModal {
-    private int id;
-    String name ,username,email,password,token,userType;
+    private int id,token;
+    String name ,username,email,password,userType;
     Date date;
 
     public int getId() {
@@ -36,7 +36,7 @@ public class UserModal {
         return password;
     }
 
-    public String getToken() {
+    public int getToken() {
         return token;
     }
 
@@ -68,7 +68,7 @@ public class UserModal {
         this.password = password;
     }
 
-    public void setToken(String token) {
+    public void setToken(int token) {
         this.token = token;
     }
 
